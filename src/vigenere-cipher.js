@@ -19,14 +19,73 @@ const { NotImplementedError } = require('../extensions/index.js');
  * reverseMachine.decrypt('AEIHQX SX DLLU!', 'alphonse') => '!NWAD TA KCATTA'
  * 
  */
+
+const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 class VigenereCipheringMachine {
-  encrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+  constructor(direction) {
+    if (direction === undefined || direction === true) {
+      this.direction = true;
+    } else {
+      this.direction = false;
+    }
   }
-  decrypt() {
-    throw new NotImplementedError('Not implemented');
-    // remove line with error and write your code here
+
+  encrypt(message, key) {
+    if (!message || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+
+    message = message.toUpperCase();
+    key = key.toUpperCase();
+   
+    let abcCount = alphabet.length;
+    let result = [];
+    let position = 0;
+    let kf = Math.ceil(message.length / key.length);
+    key = key.repeat(kf);
+    
+    for (let i = 0; i < message.length; i++) {
+      if (alphabet.indexOf(message[i]) >= 0) { 
+        let letter = message[i];
+        let shift = key[position];
+  
+        result.push(alphabet.charAt((alphabet.indexOf(letter) + alphabet.indexOf(shift)) % abcCount));
+        position++;
+      } else {
+        result.push(message[i]);
+      }
+    }
+
+    return this.direction ? result.join('') : result.reverse().join('');
+  }  
+
+  decrypt(message, key) {
+    if (!message || !key) {
+      throw new Error('Incorrect arguments!');
+    }
+    
+    message = message.toUpperCase();
+    key = key.toUpperCase();
+
+    let abcCount = alphabet.length;
+    let result = [];
+    let position = 0;
+    let kf = Math.ceil(message.length / key.length);
+    key = key.repeat(kf);
+
+    for (let i = 0; i < message.length; i++) {
+        if (alphabet.indexOf(message[i]) >= 0) { 
+          let letter = message[i];
+          let shift = key[position];
+  
+          result.push(alphabet.charAt((alphabet.indexOf(letter) + abcCount - alphabet.indexOf(shift)) % abcCount));
+          position++;
+      } else {
+        result.push(message[i]);
+      }
+    }
+    
+    return this.direction ? result.join('') : result.reverse().join('');
   }
 }
 
